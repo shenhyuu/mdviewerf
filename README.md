@@ -1,7 +1,7 @@
-# 一个现代化的 Markdown 笔记本前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的写作体验和强大的功能支持。
+# 一个现代化的 Markdown 笔记本前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的在线浏览体验。
 
 
-一个现代化的 Markdown 笔记本前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的Markdown笔记在线浏览支持。
+一个现代化的 Markdown 仓库前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的 Markdown 文档在线浏览支持。
 
 ## ✨ 特性
 
@@ -72,12 +72,11 @@ markdown-viewer/
 └── package.json     # 项目配置
 ```
 
-## 📝 使用说明
+## 📝 使用说明（默认您已经完成项目后端搭建）
 
 1. 克隆本项目到本地
-2. 克隆本项目对应后端到本地
-3. 安装依赖
-3. 运行项目前后端
+2. 安装依赖
+3. 运行项目
 4. 体验在线 Markdown 文档库
 
 ## 🤝 贡献指南
