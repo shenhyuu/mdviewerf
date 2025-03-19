@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import {ref, watch, onMounted, onBeforeUnmount} from 'vue';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -46,25 +46,25 @@ const generateOutline = (content: string) => {
   // 匹配所有标题（# 到 ######）
   const headingRegex = /^(#{1,6})\s+(.+?)(?:\s*{#([^}]+)})?$/gm;
   const headings: { level: number; text: string; id: string }[] = [];
-  
+
   let match;
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
-    
+
     // 使用与MarkdownViewer一致的ID生成方法
     const id = match[3] || text.toLowerCase()
-      .replace(/<[^>]*>/g, '') // 移除HTML标签
-      .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 非字母数字中文字符替换为短横线
-      .replace(/^-+|-+$/g, ''); // 去除首尾短横线
-    
-    headings.push({ level, text, id });
+        .replace(/<[^>]*>/g, '') // 移除HTML标签
+        .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 非字母数字中文字符替换为短横线
+        .replace(/^-+|-+$/g, ''); // 去除首尾短横线
+
+    headings.push({level, text, id});
   }
-  
+
   // 构建层级结构
   const result: OutlineItem[] = [];
   const stack: OutlineItem[] = [];
-  
+
   headings.forEach(heading => {
     const item: OutlineItem = {
       level: heading.level,
@@ -72,12 +72,12 @@ const generateOutline = (content: string) => {
       id: heading.id,
       children: []
     };
-    
+
     // 清理栈，直到找到上一级标题或栈空
     while (stack.length > 0 && stack[stack.length - 1].level >= item.level) {
       stack.pop();
     }
-    
+
     if (stack.length === 0) {
       // 顶级标题
       result.push(item);
@@ -85,10 +85,10 @@ const generateOutline = (content: string) => {
       // 子标题，添加到父标题的children中
       stack[stack.length - 1].children.push(item);
     }
-    
+
     stack.push(item);
   });
-  
+
   return result;
 };
 
@@ -99,13 +99,13 @@ watch(() => props.content, (newContent) => {
   } else {
     outlineItems.value = [];
   }
-}, { immediate: true });
+}, {immediate: true});
 
 // 点击标题跳转
 const scrollToHeading = (id: string) => {
   const element = document.getElementById(id);
   if (element) {
-    element.scrollIntoView({ 
+    element.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
@@ -144,38 +144,38 @@ onBeforeUnmount(() => {
         <div v-else class="outline-tree">
           <ul class="outline-list">
             <li v-for="item in outlineItems" :key="item.id">
-              <a 
-                :href="`#${item.id}`" 
-                :class="`heading-level-${item.level}`"
-                @click.prevent="scrollToHeading(item.id)"
-                v-html="renderLatex(item.text)"
+              <a
+                  :href="`#${item.id}`"
+                  :class="`heading-level-${item.level}`"
+                  @click.prevent="scrollToHeading(item.id)"
+                  v-html="renderLatex(item.text)"
               ></a>
               <!-- 递归渲染子级 -->
               <ul class="outline-list" v-if="item.children.length > 0">
                 <li v-for="child in item.children" :key="child.id">
-                  <a 
-                    :href="`#${child.id}`" 
-                    :class="`heading-level-${child.level}`"
-                    @click.prevent="scrollToHeading(child.id)"
-                    v-html="renderLatex(child.text)"
+                  <a
+                      :href="`#${child.id}`"
+                      :class="`heading-level-${child.level}`"
+                      @click.prevent="scrollToHeading(child.id)"
+                      v-html="renderLatex(child.text)"
                   ></a>
                   <!-- 二级嵌套 -->
                   <ul class="outline-list" v-if="child.children.length > 0">
                     <li v-for="subChild in child.children" :key="subChild.id">
-                      <a 
-                        :href="`#${subChild.id}`" 
-                        :class="`heading-level-${subChild.level}`"
-                        @click.prevent="scrollToHeading(subChild.id)"
-                        v-html="renderLatex(subChild.text)"
+                      <a
+                          :href="`#${subChild.id}`"
+                          :class="`heading-level-${subChild.level}`"
+                          @click.prevent="scrollToHeading(subChild.id)"
+                          v-html="renderLatex(subChild.text)"
                       ></a>
                       <!-- 三级嵌套 -->
                       <ul class="outline-list" v-if="subChild.children.length > 0">
                         <li v-for="deepChild in subChild.children" :key="deepChild.id">
-                          <a 
-                            :href="`#${deepChild.id}`" 
-                            :class="`heading-level-${deepChild.level}`"
-                            @click.prevent="scrollToHeading(deepChild.id)"
-                            v-html="renderLatex(deepChild.text)"
+                          <a
+                              :href="`#${deepChild.id}`"
+                              :class="`heading-level-${deepChild.level}`"
+                              @click.prevent="scrollToHeading(deepChild.id)"
+                              v-html="renderLatex(deepChild.text)"
                           ></a>
                         </li>
                       </ul>
@@ -309,7 +309,7 @@ a:hover {
     left: 85px;
     top: 15px;
   }
-  
+
   .outline-header {
     height: 35px;
     padding: 6px 12px;

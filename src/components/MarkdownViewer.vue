@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
-import { marked } from 'marked';
+import {ref, onMounted, watch, onBeforeUnmount} from 'vue';
+import {marked} from 'marked';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import hljs from 'highlight.js';
@@ -27,7 +27,7 @@ const handleOutlineVisibilityChange = (event: CustomEvent) => {
 // 保护LaTeX公式
 const protectLatex = (content: string): ProtectedContent => {
   const blocks: string[] = [];
-  
+
   // 临时替换块级公式
   let processedContent = content.replace(/\$\$([\s\S]*?)\$\$/g, (match, formula) => {
     blocks.push(match);
@@ -40,7 +40,7 @@ const protectLatex = (content: string): ProtectedContent => {
     return `@@INLINE${blocks.length - 1}@@`;
   });
 
-  return { content: processedContent, blocks };
+  return {content: processedContent, blocks};
 };
 
 // 恢复LaTeX公式
@@ -87,24 +87,24 @@ const renderer = {
   code(code: string, language: string | undefined) {
     const validLanguage = hljs.getLanguage(language || '') ? language : 'plaintext';
     const highlightedCode = validLanguage ?
-      hljs.highlight(code, { language: validLanguage }).value :
-      hljs.highlightAuto(code).value;
+        hljs.highlight(code, {language: validLanguage}).value :
+        hljs.highlightAuto(code).value;
     return `<pre><code class="hljs language-${validLanguage}">${highlightedCode}</code></pre>`;
   },
-  
+
   // 自定义标题渲染，添加ID
   heading(text: string, level: number) {
     // 从文本生成ID（移除特殊字符，用短横线替换空格）
     const id = text.toLowerCase()
-      .replace(/<[^>]*>/g, '') // 移除HTML标签
-      .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 非字母数字中文字符替换为短横线
-      .replace(/^-+|-+$/g, ''); // 去除首尾短横线
-      
+        .replace(/<[^>]*>/g, '') // 移除HTML标签
+        .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 非字母数字中文字符替换为短横线
+        .replace(/^-+|-+$/g, ''); // 去除首尾短横线
+
     return `<h${level} id="${id}">${text}</h${level}>`;
   }
 };
 
-marked.use({ 
+marked.use({
   renderer,
   breaks: true,
   gfm: true
@@ -114,14 +114,14 @@ marked.use({
 const renderMarkdown = async () => {
   try {
     // 1. 保护LaTeX公式
-    const { content: protectedContent, blocks } = protectLatex(props.content);
-    
+    const {content: protectedContent, blocks} = protectLatex(props.content);
+
     // 2. 渲染Markdown
     const markedHtml = await marked.parse(protectedContent);
-    
+
     // 3. 恢复LaTeX公式
     const restoredHtml = restoreLatex(markedHtml, blocks);
-    
+
     // 4. 渲染LaTeX公式
     htmlContent.value = renderLatex(restoredHtml);
   } catch (error) {
@@ -149,9 +149,9 @@ onBeforeUnmount(() => {
 <template>
   <div class="markdown-container">
     <div class="markdown-viewer" v-html="htmlContent"></div>
-    <OutlinePanel 
-      :content="content"
-      v-model:isVisible="isOutlineVisible"
+    <OutlinePanel
+        :content="content"
+        v-model:isVisible="isOutlineVisible"
     />
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
 
 const router = useRouter();
 const contents = ref<Record<string, string>>({});
@@ -11,7 +11,7 @@ const error = ref<string | null>(null);
 const loadContents = async () => {
   loading.value = true;
   error.value = null;
-  
+
   try {
     const response = await fetch('http://127.0.0.1:8080/contents');
     if (!response.ok) {
@@ -39,25 +39,25 @@ onMounted(() => {
 <template>
   <div class="contents">
     <h1>文档目录</h1>
-    
+
     <div v-if="loading" class="loading">
       加载中...
     </div>
-    
+
     <div v-else-if="error" class="error">
       {{ error }}
     </div>
-    
+
     <div v-else-if="Object.keys(contents).length === 0" class="empty">
       暂无可用的文档
     </div>
-    
+
     <div v-else class="document-list">
       <div
-        v-for="(uuid, title) in contents"
-        :key="uuid"
-        class="document-item"
-        @click="navigateToDocument(uuid)"
+          v-for="(uuid, title) in contents"
+          :key="uuid"
+          class="document-item"
+          @click="navigateToDocument(uuid)"
       >
         <span class="document-title">{{ title }}</span>
         <span class="arrow">→</span>

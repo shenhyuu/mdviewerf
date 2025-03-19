@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { RouterView, useRoute } from 'vue-router';
+import {ref, onMounted, watch} from 'vue';
+import {RouterView, useRoute} from 'vue-router';
 import ThemeToggle from './components/ThemeToggle.vue';
 import HomeButton from './components/HomeButton.vue';
 import OutlineButton from './components/OutlineButton.vue';
@@ -13,16 +13,16 @@ const showOutlineButton = ref(false);
 // 监听路由变化，判断是否显示大纲按钮
 watch(() => route.path, (path) => {
   showOutlineButton.value = path.includes('/documents/');
-}, { immediate: true });
+}, {immediate: true});
 
 // 页面加载时检查主题偏好
 onMounted(() => {
   const storedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+
   isDarkTheme.value = storedTheme === 'dark' || (!storedTheme && prefersDark);
   applyTheme();
-  
+
   // 监听系统主题变化
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) {
@@ -48,13 +48,13 @@ const applyTheme = () => {
 <template>
   <div class="app">
     <!-- 路由视图 -->
-    <RouterView />
-    
+    <RouterView/>
+
     <!-- 功能按钮组 -->
     <div class="button-group">
-      <HomeButton />
-      <OutlineButton v-if="showOutlineButton" />
-      <ThemeToggle @toggle="toggleTheme" />
+      <HomeButton/>
+      <OutlineButton v-if="showOutlineButton"/>
+      <ThemeToggle @toggle="toggleTheme"/>
     </div>
   </div>
 </template>

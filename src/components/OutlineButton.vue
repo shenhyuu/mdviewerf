@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import {ref, watch, onMounted, onUnmounted} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 
 // 控制大纲显示状态
 const isOutlineVisible = ref(false);
@@ -17,17 +17,17 @@ const isDocPage = ref(false);
 watch(() => route.path, (path) => {
   // 只在文档页面显示大纲按钮（非首页且包含 /documents/）
   isDocPage.value = path.includes('/documents/');
-  
+
   // 路由变化时隐藏大纲
   isOutlineVisible.value = false;
-}, { immediate: true });
+}, {immediate: true});
 
 // 切换大纲显示状态
 const toggleOutline = () => {
   isOutlineVisible.value = !isOutlineVisible.value;
   // 发送自定义事件通知文档查看器组件
   window.dispatchEvent(new CustomEvent('outline-visibility-changed', {
-    detail: { isVisible: isOutlineVisible.value }
+    detail: {isVisible: isOutlineVisible.value}
   }));
 };
 
@@ -37,16 +37,16 @@ const handleClickOutside = (event: MouseEvent) => {
   const outlineButton = document.querySelector('.outline-button');
   // 获取大纲面板元素
   const outlinePanel = document.querySelector('.outline-panel');
-  
+
   // 如果点击的不是大纲按钮或大纲面板，且大纲当前是可见的，则隐藏大纲
-  if (outlineButton && outlinePanel && 
-      !outlineButton.contains(event.target as Node) && 
-      !outlinePanel.contains(event.target as Node) && 
+  if (outlineButton && outlinePanel &&
+      !outlineButton.contains(event.target as Node) &&
+      !outlinePanel.contains(event.target as Node) &&
       isOutlineVisible.value) {
     isOutlineVisible.value = false;
     // 发送自定义事件通知文档查看器组件
     window.dispatchEvent(new CustomEvent('outline-visibility-changed', {
-      detail: { isVisible: false }
+      detail: {isVisible: false}
     }));
   }
 };
@@ -70,7 +70,7 @@ onUnmounted(() => {
 router.afterEach((to, from) => {
   const isFromHome = from.path === '/' || from.name === 'contents';
   const isToDetail = to.path !== '/' && to.name !== 'contents';
-  
+
   if (isFromHome && isToDetail) {
     isAnimated.value = false;
     previousRouteWasHome.value = true;
@@ -92,13 +92,14 @@ defineExpose({
 <template>
   <transition name="split-button" appear>
     <div class="outline-button-container" v-if="isDocPage" :class="{ 'animated': isAnimated && previousRouteWasHome }">
-      <button 
-        class="outline-button" 
-        :class="{ 'active': isOutlineVisible }"
-        @click="toggleOutline"
-        aria-label="切换大纲显示"
+      <button
+          class="outline-button"
+          :class="{ 'active': isOutlineVisible }"
+          @click="toggleOutline"
+          aria-label="切换大纲显示"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
           <line x1="-3" y1="6" x2="27" y2="6"></line>
           <line x1="-3" y1="14" x2="27" y2="14"></line>
           <line x1="-3" y1="22" x2="27" y2="22"></line>
@@ -191,7 +192,7 @@ defineExpose({
     width: 45px;
     height: 45px;
   }
-  
+
   .icon {
     width: 20px;
     height: 20px;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
-import { computed, ref, onMounted } from 'vue';
+import {useRouter, useRoute} from 'vue-router';
+import {computed, ref, onMounted} from 'vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -32,7 +32,7 @@ const previousRouteWasHome = ref(true);
 router.afterEach((to, from) => {
   const isFromHome = from.path === '/' || from.name === 'contents';
   const isToDetail = to.path !== '/' && to.name !== 'contents';
-  
+
   if (isFromHome && isToDetail) {
     isAnimated.value = false;
     previousRouteWasHome.value = true;
@@ -52,7 +52,8 @@ router.afterEach((to, from) => {
       <button @click="goHome" title="返回主页">
         <div class="icon">
           <!-- 主页图标 -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
@@ -143,7 +144,7 @@ button:hover {
     width: 45px;
     height: 45px;
   }
-  
+
   .icon {
     width: 20px;
     height: 20px;

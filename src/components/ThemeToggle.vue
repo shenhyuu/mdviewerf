@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import {ref, onMounted, watch} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 
 const isDarkTheme = ref(false);
 const route = useRoute();
@@ -17,7 +17,7 @@ onMounted(() => {
     // 检查系统默认主题
     isDarkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
-  
+
   // 应用主题
   applyTheme();
 });
@@ -37,7 +37,7 @@ const applyTheme = () => {
     document.documentElement.classList.add('light-theme');
     document.documentElement.classList.remove('dark-theme');
   }
-  
+
   // 保存主题设置到本地存储
   localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
 };
@@ -53,7 +53,8 @@ watch(isDarkTheme, () => {
     <button @click="toggleTheme" :title="isDarkTheme ? '切换到亮色模式' : '切换到暗色模式'">
       <div v-if="isDarkTheme" class="icon">
         <!-- 太阳图标 -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -67,7 +68,8 @@ watch(isDarkTheme, () => {
       </div>
       <div v-else class="icon">
         <!-- 月亮图标 -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </div>
@@ -117,7 +119,7 @@ button:hover {
     width: 45px;
     height: 45px;
   }
-  
+
   .icon {
     width: 20px;
     height: 20px;

@@ -2,8 +2,8 @@
 import ThemeToggle from './components/ThemeToggle.vue';
 import HomeButton from './components/HomeButton.vue';
 import OutlineButton from './components/OutlineButton.vue';
-import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import {ref, watch} from 'vue';
+import {useRoute} from 'vue-router';
 
 const route = useRoute();
 const showOutlineButton = ref(false);
@@ -11,15 +11,15 @@ const showOutlineButton = ref(false);
 // 监听路由变化，判断是否显示大纲按钮
 watch(() => route.path, (path) => {
   showOutlineButton.value = path.includes('/documents/');
-}, { immediate: true });
+}, {immediate: true});
 </script>
 
 <template>
   <div class="root-app">
     <div class="app-controls">
-      <ThemeToggle />
-      <HomeButton />
-      <OutlineButton v-if="showOutlineButton" />
+      <ThemeToggle/>
+      <HomeButton/>
+      <OutlineButton v-if="showOutlineButton"/>
     </div>
     <router-view></router-view>
   </div>
