@@ -1,7 +1,7 @@
 # 一个现代化的 Markdown 笔记本前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的在线浏览体验。
 
 
-一个现代化的 Markdown 仓库前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的 Markdown 文档在线浏览支持。
+一个现代化的 Markdown 笔记本前端，基于 Vue 3 + TypeScript + Vite 构建，提供优雅的在线浏览体验。
 
 ## ✨ 特性
 
