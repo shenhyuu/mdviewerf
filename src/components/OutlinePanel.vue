@@ -51,8 +51,12 @@ const generateOutline = (content: string) => {
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
-    // 使用标题文本生成ID（替换空格为短横线，移除特殊字符）
-    const id = match[3] || text.toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
+    
+    // 使用与MarkdownViewer一致的ID生成方法
+    const id = match[3] || text.toLowerCase()
+      .replace(/<[^>]*>/g, '') // 移除HTML标签
+      .replace(/[^\w\u4e00-\u9fa5]+/g, '-') // 非字母数字中文字符替换为短横线
+      .replace(/^-+|-+$/g, ''); // 去除首尾短横线
     
     headings.push({ level, text, id });
   }
