@@ -19,7 +19,9 @@ watch(() => route.path, (path) => {
     <div class="app-controls">
       <ThemeToggle/>
       <HomeButton/>
-      <OutlineButton v-if="showOutlineButton"/>
+      <transition name="split-button">
+        <OutlineButton v-if="showOutlineButton"/>
+      </transition>
     </div>
     <router-view></router-view>
   </div>
@@ -47,6 +49,42 @@ watch(() => route.path, (path) => {
     top: 15px;
     left: 15px;
     gap: 10px;
+  }
+}
+
+/* 添加淡入淡出动画 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+/* 重新定义与OutlineButton内部一致的动画 */
+.split-button-enter-active {
+  animation: splitFromThemeButton 0.5s ease-out;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+.split-button-leave-active {
+  animation: splitFromThemeButton 0.5s ease-in reverse;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes splitFromThemeButton {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) scale(0);
+  }
+  40% {
+    opacity: 0.5;
+    transform: translateX(-20px) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 </style> 

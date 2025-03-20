@@ -34,12 +34,14 @@ router.afterEach((to, from) => {
   const isToDetail = to.path !== '/' && to.name !== 'contents';
 
   if (isFromHome && isToDetail) {
-    isAnimated.value = false;
+    // 移除动画状态重置，避免闪烁
+    // isAnimated.value = false;
     previousRouteWasHome.value = true;
-    // 设置动画状态，使用较短的延迟
-    setTimeout(() => {
+    
+    // 使用requestAnimationFrame代替setTimeout，确保在浏览器渲染前设置状态
+    requestAnimationFrame(() => {
       isAnimated.value = true;
-    }, 50);
+    });
   } else {
     previousRouteWasHome.value = false;
   }
@@ -48,7 +50,8 @@ router.afterEach((to, from) => {
 
 <template>
   <transition name="split-button" appear>
-    <div class="home-button" v-if="showHomeButton" :class="{ 'animated': isAnimated && previousRouteWasHome }">
+    <div class="home-button" v-if="showHomeButton" :class="{ 'animated': isAnimated && previousRouteWasHome }"
+        style="backface-visibility: hidden;">
       <button @click="goHome" title="返回主页">
         <div class="icon">
           <!-- 主页图标 -->
@@ -101,10 +104,16 @@ button:hover {
 /* 分裂动画效果 */
 .split-button-enter-active {
   animation: splitFromThemeButton 0.5s ease-out;
+  /* 确保动画结束状态保持 */
+  animation-fill-mode: forwards;
+  /* 提高动画性能 */
+  will-change: transform, opacity;
 }
 
 .split-button-leave-active {
   animation: splitFromThemeButton 0.5s ease-in reverse;
+  /* 提高动画性能 */
+  will-change: transform, opacity;
 }
 
 @keyframes splitFromThemeButton {
@@ -125,6 +134,12 @@ button:hover {
 /* 添加手动触发的动画类 */
 .animated button {
   animation: fadeInRotate 0.5s ease-out;
+  /* 确保动画结束状态保持，防止闪烁 */
+  animation-fill-mode: forwards;
+  /* 防止动画重复播放 */
+  animation-iteration-count: 1;
+  /* 提高性能 */
+  will-change: transform, opacity;
 }
 
 @keyframes fadeInRotate {

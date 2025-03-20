@@ -11,13 +11,8 @@ const router = useRouter();
 const isAnimated = ref(false);
 const previousRouteWasHome = ref(true);
 
-// 监听路由变化，在文档页面才显示按钮
-const isDocPage = ref(false);
-
+// 监听路由变化，更新大纲显示状态
 watch(() => route.path, (path) => {
-  // 只在文档页面显示大纲按钮（非首页且包含 /documents/）
-  isDocPage.value = path.includes('/documents/');
-
   // 路由变化时隐藏大纲
   isOutlineVisible.value = false;
 }, {immediate: true});
@@ -34,7 +29,7 @@ const toggleOutline = () => {
 // 处理点击外部事件
 const handleClickOutside = (event: MouseEvent) => {
   // 获取大纲按钮元素
-  const outlineButton = document.querySelector('.outline-button');
+  const outlineButton = document.querySelector('.outline-button button');
   // 获取大纲面板元素
   const outlinePanel = document.querySelector('.outline-panel');
 
@@ -51,14 +46,12 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-// 在组件挂载后，如果按钮需要显示，则触发动画
+// 在组件挂载后设置动画状态
 onMounted(() => {
-  if (isDocPage.value) {
-    // 直接设置动画状态，不延迟
-    isAnimated.value = true;
-    // 添加点击外部事件监听器
-    document.addEventListener('click', handleClickOutside);
-  }
+  // 直接设置动画状态
+  isAnimated.value = true;
+  // 添加点击外部事件监听器
+  document.addEventListener('click', handleClickOutside);
 });
 
 // 在组件卸载时移除事件监听器
@@ -66,58 +59,57 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
-// 当路由变化时，重置动画状态
+// 当路由变化时设置动画状态
 router.afterEach((to, from) => {
   const isFromHome = from.path === '/' || from.name === 'contents';
   const isToDetail = to.path !== '/' && to.name !== 'contents';
 
   if (isFromHome && isToDetail) {
-    isAnimated.value = false;
     previousRouteWasHome.value = true;
-    // 设置动画状态，使用较长的延迟，比主页按钮略晚一点触发
-    setTimeout(() => {
+    
+    // 使用requestAnimationFrame确保动画状态在下一帧更新
+    requestAnimationFrame(() => {
       isAnimated.value = true;
-    }, 250); // 主页按钮是50ms, 大纲按钮延迟更多以便看到分裂效果
+    });
   } else {
     previousRouteWasHome.value = false;
   }
 });
 
-// 向父组件暴露大纲状态和内容
+// 向父组件暴露大纲状态
 defineExpose({
   isOutlineVisible
 });
 </script>
 
 <template>
-  <transition name="split-button" appear>
-    <div class="outline-button-container" v-if="isDocPage" :class="{ 'animated': isAnimated && previousRouteWasHome }">
-      <button
-          class="outline-button"
-          :class="{ 'active': isOutlineVisible }"
-          @click="toggleOutline"
-          aria-label="切换大纲显示"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="-3" y1="6" x2="27" y2="6"></line>
-          <line x1="-3" y1="14" x2="27" y2="14"></line>
-          <line x1="-3" y1="22" x2="27" y2="22"></line>
+  <!-- 移除v-if="isDocPage"，由父组件控制显示/隐藏 -->
+  <div class="outline-button"
+       :class="{ 'animated': isAnimated && previousRouteWasHome }"
+       style="backface-visibility: hidden;">
+    <button @click="toggleOutline" 
+        :title="isOutlineVisible ? '隐藏大纲' : '显示大纲'"
+        :class="{ 'active': isOutlineVisible }">
+      <div class="icon">
+        <!-- 简化SVG图标，与主页按钮保持一致的风格 -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
-      </button>
-    </div>
-  </transition>
+      </div>
+    </button>
+  </div>
 </template>
 
 <style scoped>
-.outline-button-container {
+.outline-button {
   /* 移除固定定位相关样式，因为已经由父元素控制 */
-  position: relative;
-  z-index: 100;
   transform-origin: left center;
 }
 
-.outline-button {
+button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -129,56 +121,84 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  padding: 0;
+  /* 确保所有属性都有平滑过渡 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-.outline-button:hover {
+/* 非激活状态的悬停效果 */
+button:not(.active):hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px var(--shadow-color);
 }
 
-.outline-button.active {
-  background-color: var(--secondary-bg);
+/* 激活状态的悬停效果 */
+button.active:hover {
+  transform: translateY(-2px); /* 只有悬浮效果，旋转由图标处理 */
+  box-shadow: 0 6px 12px var(--shadow-color);
 }
 
+/* 图标样式 */
 .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
+  transition: transform 0.3s ease; /* 添加过渡效果 */
+  transform-origin: center; /* 确保从中心旋转 */
+}
+
+/* 激活状态时旋转图标 */
+button.active .icon {
+  transform: rotate(90deg); /* 顺时针旋转90度 */
 }
 
 /* 分裂动画效果 */
 .split-button-enter-active {
-  animation: splitFromHomeButton 0.5s ease-out;
+  animation: splitFromThemeButton 0.5s ease-out;
+  /* 确保动画结束状态保持 */
+  animation-fill-mode: forwards;
+  /* 提高动画性能 */
+  will-change: transform, opacity;
 }
 
 .split-button-leave-active {
-  animation: splitFromHomeButton 0.5s ease-in reverse;
+  animation: splitFromThemeButton 0.5s ease-in reverse;
+  /* 提高动画性能 */
+  will-change: transform, opacity;
 }
 
-@keyframes splitFromHomeButton {
+@keyframes splitFromThemeButton {
   0% {
     opacity: 0;
-    transform: translateY(-40px) scale(0);
+    transform: translateX(-40px) scale(0);
   }
   40% {
     opacity: 0.5;
-    transform: translateY(-20px) scale(0.5);
+    transform: translateX(-20px) scale(0.5);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0) scale(1);
   }
 }
 
 /* 添加手动触发的动画类 */
 .animated button {
   animation: fadeInRotate 0.5s ease-out;
+  /* 确保动画结束状态保持 */
+  animation-fill-mode: forwards;
+  /* 防止动画重复播放 */
+  animation-iteration-count: 1;
+  /* 提高性能 */
+  will-change: transform, opacity;
 }
 
 @keyframes fadeInRotate {
   0% {
     opacity: 0;
-    transform: rotate(90deg) scale(0);
+    transform: rotate(-90deg) scale(0);
   }
   100% {
     opacity: 1;
@@ -188,11 +208,11 @@ defineExpose({
 
 /* 平板和手机断点调整 */
 @media (max-width: 768px) {
-  .outline-button {
+  button {
     width: 45px;
     height: 45px;
   }
-
+  
   .icon {
     width: 20px;
     height: 20px;
