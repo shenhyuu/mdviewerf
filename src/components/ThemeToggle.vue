@@ -77,12 +77,13 @@ button {
   cursor: pointer;
   padding: 0;
   box-shadow: 0 4px 8px var(--shadow-color);
-  will-change: transform, box-shadow;
+  /* 覆盖App.vue中的transition设置，移除所有位移过渡效果 */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* 移除hover动效 */
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px var(--shadow-color);
+  /* 移除transform和box-shadow变化 */
 }
 
 .icon {
@@ -91,6 +92,8 @@ button:hover {
   justify-content: center;
   width: 24px;
   height: 24px;
+  /* 只保留图标的淡入淡出效果 */
+  transition: opacity 0.3s ease;
 }
 
 /* 平板和手机断点调整 */

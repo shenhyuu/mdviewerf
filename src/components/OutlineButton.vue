@@ -9,6 +9,7 @@ const router = useRouter();
 
 // 动画相关状态
 const isAnimated = ref(false);
+const isAnimatedOut = ref(false);
 const previousRouteWasHome = ref(true);
 
 // 监听路由变化，更新大纲显示状态
@@ -63,6 +64,18 @@ onUnmounted(() => {
 router.afterEach((to, from) => {
   const isFromHome = from.path === '/' || from.name === 'contents';
   const isToDetail = to.path !== '/' && to.name !== 'contents';
+  const isToHome = to.path === '/' || to.name === 'contents';
+
+  // 如果导航到主页，添加退出动画
+  if (isToHome && !isFromHome) {
+    isAnimatedOut.value = true;
+    // 允许动画完成
+    setTimeout(() => {
+      isAnimatedOut.value = false;
+    }, 250); // 修改为250ms，加快动画完成时间
+  } else {
+    isAnimatedOut.value = false;
+  }
 
   if (isFromHome && isToDetail) {
     previousRouteWasHome.value = true;
@@ -85,7 +98,10 @@ defineExpose({
 <template>
   <!-- 移除v-if="isDocPage"，由父组件控制显示/隐藏 -->
   <div class="outline-button"
-       :class="{ 'animated': isAnimated && previousRouteWasHome }"
+       :class="{ 
+         'animated': isAnimated && previousRouteWasHome,
+         'animated-out': isAnimatedOut 
+       }"
        style="backface-visibility: hidden;">
     <button @click="toggleOutline" 
         :title="isOutlineVisible ? '隐藏大纲' : '显示大纲'"
@@ -156,7 +172,7 @@ button.active .icon {
 
 /* 分裂动画效果 */
 .split-button-enter-active {
-  animation: splitFromThemeButton 0.5s ease-out;
+  animation: splitFromThemeButton 0.4s ease-out;
   /* 确保动画结束状态保持 */
   animation-fill-mode: forwards;
   /* 提高动画性能 */
@@ -164,7 +180,7 @@ button.active .icon {
 }
 
 .split-button-leave-active {
-  animation: splitFromThemeButton 0.5s ease-in reverse;
+  animation: splitFromThemeButton 0.4s ease-in reverse;
   /* 提高动画性能 */
   will-change: transform, opacity;
 }
@@ -176,17 +192,17 @@ button.active .icon {
   }
   40% {
     opacity: 0.5;
-    transform: translateX(-20px) scale(0.5);
+    transform: translateX(-20px) scale(0.5) rotate(-45deg);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotate(0);
   }
 }
 
 /* 添加手动触发的动画类 */
 .animated button {
-  animation: fadeInRotate 0.5s ease-out;
+  animation: fadeInRotate 0.4s ease-out;
   /* 确保动画结束状态保持 */
   animation-fill-mode: forwards;
   /* 防止动画重复播放 */
@@ -200,9 +216,39 @@ button.active .icon {
     opacity: 0;
     transform: rotate(-90deg) scale(0);
   }
+  50% {
+    opacity: 0.7;
+    transform: rotate(-45deg) scale(0.5);
+  }
   100% {
     opacity: 1;
     transform: rotate(0) scale(1);
+  }
+}
+
+/* 新增退出动画效果 */
+.animated-out button {
+  animation: fadeOutRotate 0.25s ease-in;
+  /* 确保动画结束状态保持 */
+  animation-fill-mode: forwards;
+  /* 防止动画重复播放 */
+  animation-iteration-count: 1;
+  /* 提高性能 */
+  will-change: transform, opacity;
+}
+
+@keyframes fadeOutRotate {
+  0% {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: rotate(-45deg) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0);
   }
 }
 

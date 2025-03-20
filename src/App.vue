@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue';
-import {RouterView, useRoute} from 'vue-router';
+import {RouterView, useRoute, useRouter} from 'vue-router';
 import ThemeToggle from './components/ThemeToggle.vue';
 import HomeButton from './components/HomeButton.vue';
 import OutlineButton from './components/OutlineButton.vue';
@@ -8,11 +8,27 @@ import OutlineButton from './components/OutlineButton.vue';
 // 主题状态
 const isDarkTheme = ref(false);
 const route = useRoute();
+const router = useRouter();
 const showOutlineButton = ref(false);
+const shouldAnimateOutline = ref(false);
 
 // 监听路由变化，判断是否显示大纲按钮
-watch(() => route.path, (path) => {
-  showOutlineButton.value = path.includes('/documents/');
+watch(() => route.path, (path, oldPath) => {
+  const isDocumentPath = path.includes('/documents/');
+  const wasDocumentPath = oldPath && oldPath.includes('/documents/');
+  
+  // 如果从文档页面导航到非文档页面，触发退出动画
+  if (wasDocumentPath && !isDocumentPath) {
+    shouldAnimateOutline.value = true;
+    // 延迟隐藏按钮，让动画有时间完成
+    setTimeout(() => {
+      showOutlineButton.value = false;
+      shouldAnimateOutline.value = false;
+    }, 250); // 修改为250ms，与按钮动画一致
+  } else {
+    // 直接设置按钮显示状态
+    showOutlineButton.value = isDocumentPath;
+  }
 }, {immediate: true});
 
 // 页面加载时检查主题偏好
@@ -57,9 +73,7 @@ const applyTheme = () => {
     <div class="app-controls">
       <ThemeToggle @toggle="toggleTheme"/>
       <HomeButton/>
-      <transition name="split-button">
-        <OutlineButton v-if="showOutlineButton"/>
-      </transition>
+      <OutlineButton v-if="showOutlineButton || shouldAnimateOutline"/>
     </div>
     
     <!-- 路由视图 -->
@@ -143,21 +157,21 @@ html, body {
 
 /* 添加淡入淡出动画 */
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.25s ease;
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 
-/* 重新定义与OutlineButton内部一致的动画 */
+/* 重新定义与按钮组件一致的动画 */
 .split-button-enter-active {
-  animation: splitFromThemeButton 0.5s ease-out;
+  animation: splitFromThemeButton 0.4s ease-out;
   animation-fill-mode: forwards;
   will-change: transform, opacity;
 }
 
 .split-button-leave-active {
-  animation: splitFromThemeButton 0.5s ease-in reverse;
+  animation: splitFromThemeButton 0.25s ease-in reverse;
   animation-fill-mode: forwards;
   will-change: transform, opacity;
 }
@@ -169,31 +183,32 @@ html, body {
   }
   40% {
     opacity: 0.5;
-    transform: translateX(-20px) scale(0.5);
+    transform: translateX(-20px) scale(0.5) rotate(-45deg);
   }
   100% {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1) rotate(0);
   }
 }
 
 /* 主题切换过渡效果 */
 .theme-transition {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* 保留颜色变化过渡，但不含位移动效 */
 }
 
-/* 按钮过渡效果 */
+/* 按钮过渡效果 - 这会影响所有按钮，但我们为主题按钮专门设置了样式覆盖这个效果 */
 button {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* 卡片过渡效果 */
 .card {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* 链接过渡效果 */
 a {
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
 }
 </style>
