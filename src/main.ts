@@ -1,5 +1,5 @@
 import {createApp} from 'vue'
-import RootApp from './RootApp.vue'
+import App from './App.vue'
 import router from './router'
 import './style.css'
 
@@ -9,16 +9,28 @@ const initTheme = () => {
     const savedTheme = localStorage.getItem('theme');
     // 如果有保存的主题设置，使用它；否则检查系统默认
     if (savedTheme) {
-        document.documentElement.classList.add(savedTheme === 'dark' ? 'dark-theme' : 'light-theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.remove('light-theme');
+        } else {
+            document.documentElement.classList.add('light-theme');
+            document.documentElement.classList.remove('dark-theme');
+        }
     } else {
         // 检查系统默认主题
         const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.classList.add(isDarkMode ? 'dark-theme' : 'light-theme');
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.remove('light-theme');
+        } else {
+            document.documentElement.classList.add('light-theme');
+            document.documentElement.classList.remove('dark-theme');
+        }
     }
 };
 
 initTheme();
 
-const app = createApp(RootApp)
+const app = createApp(App)
 app.use(router)
 app.mount('#app')

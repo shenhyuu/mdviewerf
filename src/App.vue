@@ -41,21 +41,29 @@ const toggleTheme = () => {
 
 // 应用主题
 const applyTheme = () => {
-  document.documentElement.classList.toggle('dark', isDarkTheme.value);
+  if (isDarkTheme.value) {
+    document.documentElement.classList.add('dark-theme');
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    document.documentElement.classList.add('light-theme');
+    document.documentElement.classList.remove('dark-theme');
+  }
 };
 </script>
 
 <template>
   <div class="app">
+    <!-- 功能按钮组 -->
+    <div class="app-controls">
+      <ThemeToggle @toggle="toggleTheme"/>
+      <HomeButton/>
+      <transition name="split-button">
+        <OutlineButton v-if="showOutlineButton"/>
+      </transition>
+    </div>
+    
     <!-- 路由视图 -->
     <RouterView/>
-
-    <!-- 功能按钮组 -->
-    <div class="button-group">
-      <HomeButton/>
-      <OutlineButton v-if="showOutlineButton"/>
-      <ThemeToggle @toggle="toggleTheme"/>
-    </div>
   </div>
 </template>
 
@@ -107,34 +115,85 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--secondary-bg);
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app {
   min-height: 100vh;
+  width: 100%;
 }
 
-.button-group {
+.app-controls {
   position: fixed;
-  left: 20px;
   top: 20px;
+  left: 20px;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  z-index: 100;
-}
-
-* {
-  box-sizing: border-box;
-  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* 移动设备断点调整 */
 @media (max-width: 768px) {
-  .button-group {
-    left: 15px;
+  .app-controls {
     top: 15px;
+    left: 15px;
     gap: 10px;
   }
+}
+
+/* 添加淡入淡出动画 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+/* 重新定义与OutlineButton内部一致的动画 */
+.split-button-enter-active {
+  animation: splitFromThemeButton 0.5s ease-out;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+.split-button-leave-active {
+  animation: splitFromThemeButton 0.5s ease-in reverse;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes splitFromThemeButton {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) scale(0);
+  }
+  40% {
+    opacity: 0.5;
+    transform: translateX(-20px) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* 主题切换过渡效果 */
+.theme-transition {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* 按钮过渡效果 */
+button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 卡片过渡效果 */
+.card {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* 链接过渡效果 */
+a {
+  transition: color 0.2s ease;
 }
 </style>

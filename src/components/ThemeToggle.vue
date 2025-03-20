@@ -6,51 +6,31 @@ const isDarkTheme = ref(false);
 const route = useRoute();
 const router = useRouter();
 
-// 初始化主题
-onMounted(() => {
-  // 从本地存储中获取主题设置
-  const savedTheme = localStorage.getItem('theme');
-  // 如果有保存的主题设置，使用它；否则检查系统默认
-  if (savedTheme) {
-    isDarkTheme.value = savedTheme === 'dark';
-  } else {
-    // 检查系统默认主题
-    isDarkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
+// 定义emit
+const emit = defineEmits(['toggle']);
 
-  // 应用主题
-  applyTheme();
+// 初始化主题状态
+onMounted(() => {
+  // 从文档类名中获取当前主题状态
+  isDarkTheme.value = document.documentElement.classList.contains('dark-theme');
 });
 
 // 切换主题
 const toggleTheme = () => {
   isDarkTheme.value = !isDarkTheme.value;
+  // 触发toggle事件通知父组件
+  emit('toggle');
 };
 
-// 应用主题
-const applyTheme = () => {
-  // 更新 document 上的 class
-  if (isDarkTheme.value) {
-    document.documentElement.classList.add('dark-theme');
-    document.documentElement.classList.remove('light-theme');
-  } else {
-    document.documentElement.classList.add('light-theme');
-    document.documentElement.classList.remove('dark-theme');
-  }
-
-  // 保存主题设置到本地存储
-  localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
-};
-
-// 监听主题变化
-watch(isDarkTheme, () => {
-  applyTheme();
+// 监听外部主题变化（如果父组件更新了主题）
+watch(() => document.documentElement.classList.contains('dark-theme'), (isDark) => {
+  isDarkTheme.value = isDark;
 });
 </script>
 
 <template>
   <div class="theme-toggle">
-    <button @click="toggleTheme" :title="isDarkTheme ? '切换到亮色模式' : '切换到暗色模式'">
+    <button @click="toggleTheme" :title="isDarkTheme ? '切换到亮色模式' : '切换到暗色模式'" class="theme-transition">
       <div v-if="isDarkTheme" class="icon">
         <!-- 太阳图标 -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -95,9 +75,9 @@ button {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
   padding: 0;
   box-shadow: 0 4px 8px var(--shadow-color);
+  will-change: transform, box-shadow;
 }
 
 button:hover {
